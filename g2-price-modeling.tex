@@ -49,30 +49,18 @@
 \abstract{We analyze G2 spot instance price}
 
 \section{Introduction}\label{sec:1}
+Cloud computing provides various types of compute resources to serve diverse application scenarios. The cloud computing frees the burden of system administration overheads without incurring prohibitive initial hardware purchase cost. From the service provider's perspective, fully utilizing the already established hardware resources and services is crucial to maximize monetary gain. As the users' resource demand can vary from time to time, some cloud computing providers offer services at chaper price than the regular price to maximize hardware/service utilization. For instance, Amazon Web Services (AWS), a leading cloud computing vendor, provides its surplus of EC2 computing resources at a cheaper price in the form of \emph{spot instance}. A user who wants to use spot instance bids for a price that one is willing to pay, and if the bid price is higher than the spot price that is decided by the service provider, one can get the resource allocated and pays for the spot price in the hourly basis. Other than AWS, Google Cloud Engine provides such opportunistic resources in the form of \emph{preemptive instances}, and Microsoft Azure provides its excess compute capacity as \emph{low-priority VM}.
 
+Though users can utilize the opportunistic resources at a cheaper price, sudden service termination can happen at anytime as the demand for the computing resource changes. To mitigate the chance of sudden service interruption, few works were conducted to better predict and model the price change of EC2 spot instance in literature. Ben-Yehuda et al.~\cite{spot-instance-pricing-analysis} and Zhao et al.~\cite{spot-price-han-arima} tried to predict the future spot instance price using various predictive analysis algorithms, but they all concluded that the spot price is rather random and hard to make meaningful prediction for future price changes. Since then, most of studies that are related to the utilization of spot instance focus on the handling sudden service interruption~\cite{tr-spark,spot-mpi-checkpoint,flint,deep-spot-cloud} or spot instance bid strategy~\cite{not-bid-cloud,how-to-bid-cloud}. 
 
+In this paper, we apply few time-series analysis algorithms to predict future price change pattern of AWS EC2 spot instances. By carefully desiging the period of train datasets, we could uncover that applying seasonal-arima (s-arima) can improve the accuracy of price change prediction error by XY\% comparing to the naive method that references most recent price to predict future price~\cite{deep-spot-cloud}. In addition to the contribution of improved price prediction accuracy, we could also discover that the configuration values to get the best prediction accuracy differs significantly across different availability zones (AZs) and instance types. Based on the extensive experiments and promising results, we bring up an opportunity of improving spot instance prediction accuracy that can result in significant cost gain for cloud computing users with increased system stability.
 
-In this paper, we focus to analyze the predication of spot instances price for 7 regions by use different time series models such as ARIMA, SARIMA VAR, DLM, prophet, average and naïve model
-our work covered  7 regions of spot instances datasets, ap-northeast-1, ap-southeast-1, ap-regions, and 5 types and different period of datasets G2(03-02 to 2016-10-31),I2(2016-05-03 to 2017-02-04),M4,c3,R3(2016-03-02 to 2017-02-04)
-
-
-
-
-
-
-
-
-Explain opportunistic cloud computing resources with spot instance in EC2
-
-Mention the difficulies of price change prediction
-Ben-Yehuda et. al~\cite{spot-instance-pricing-analysis}
-
-Describe uniqueness of GPU spot instance with DeepSpotCloud
-
-Summarize the overall contents
 
 \section{Time-Series Analysis for GPU Spot Instances}
 List basic methods that are widely used in other wors
+focus to analyze the predication of spot instances price for 7 regions by use different time series models such as ARIMA, SARIMA VAR, DLM, prophet, average and naïve model
+our work covered  7 regions of spot instances datasets, ap-northeast-1, ap-southeast-1, ap-regions, and 5 types and different period of datasets G2(03-02 to 2016-10-31),I2(2016-05-03 to 2017-02-04),M4,c3,R3(2016-03-02 to 2017-02-04)
+
 
 naive
 
@@ -99,6 +87,7 @@ Thus, ARIMA if d=n will be
 \label{Eq-ARIMA}
 \end{equation}
 Where the term \(\beta_i \) is, weight applied to prior values in the time series \(\delta_i \) is autocorrelation coefficients at lags and \(\epsilon_i \) is residual error term 
+
 \section{Evaluation}
 Compare all the methods of different types of algorithms to different instance types
 \begin{figure}
@@ -108,9 +97,9 @@ Compare all the methods of different types of algorithms to different instance t
 \section{Conclusion}
 Summarize
 
-\begin{acknowledgement}
-Thanks to ...
-\end{acknowledgement}
+%\begin{acknowledgement}
+%Thanks to ...
+%\end{acknowledgement}
 \bibliographystyle{spmpsci}
 \bibliography{g2-price-modeling}
 \end{document}
