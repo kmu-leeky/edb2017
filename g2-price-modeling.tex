@@ -60,12 +60,6 @@ In this paper, we apply few time-series analysis algorithms to predict future pr
 
 
 \section{Time-Series Analysis for AWS EC2 Spot Instance Price}
-List basic methods that are widely used in other wors
-focus to analyze the predication of spot instances price for 7 regions by use different time series models such as ARIMA, SARIMA VAR, DLM, prophet, average and naïve model
-our work covered  7 regions of spot instances datasets, ap-northeast-1, ap-southeast-1, ap-regions, and 5 types and different period of datasets G2(03-02 to 2016-10-31),I2(2016-05-03 to 2017-02-04),M4,c3,R3(2016-03-02 to 2017-02-04)
-
-
-
 In our work, we use many forecasting time series models and parameters to get best fit to data, from sample models as mean method which use mean of history as predation, assume that our historical data sets be \(x\)
 \begin{equation}
  \frac{y_t = x_{t-1} +x_{t-2}+ x_{t-3}+.....+x_{t-n}}{X}
@@ -105,32 +99,25 @@ Where the term \(\beta_i \) is, weight applied to prior values in the time serie
 \section{Evaluation}
 To evalate the effectiveness of applying various algorithms to predict spot instance price, we fetch 11 months (March. 2016 ~ Feb. 2017) of spot price log files from the AWS public API service. From the log file, we extracted the timestamp, spot price, availability zone, and instance type. As the on-demand instance price is different for different instance types in different regions, we normalize the spot instance price to that of on-demand instance. The normailized value indicates the cost gain that one can expect while using spot instances.
 
-We evaluate naive, seasonal naive, mean, seasonal ARIMA, Linear Regression, and Prophet~\cite{prophet} algorithms using packages in R 3.2.4. Among them, Linear Regression and Prophet always perform worse than Arima, and we do not show the result. Different algorithms have distinct heuristic to choose the train dataset window. Naive and seasonal naive simply reference values from the previous observations. For mean method, we use previous 1, 3, 7, 15, 30, 60, 90, and 120 days to get mean value for prediction. However, using only the most recent data (1 day) shows the best result, and we exclude other results. For seasonal Arima, we differentiate the training dataset period as 30, 60, 90, 120, and 150 days. In the prediction step, we use a model built by \textit{auto.arima} method of R. After building a model, we use the model for the next 1, 4, 8, 15, and 30 days. Overall, seasonal Arima has two configurations in the modeling data, \emph{previous days used in modeling, the number of days for a model to be used}, and we notate the value using brackets. For all algorithms, we predict the normalized spot instance price for the next 24 hours and calculate root-mean-squared-error to evaluate each model.   
+At the time of writing, there are over 60s of AWS EC2 instance types that are served in over 30 availability zones. It becomes prohibitive to present the experiment results from all the instance types, and we select representative instances in General, GPU, Compute-, Memory-, and Storage-optimized types that are m4.2xlarge, g2.2xlarge, c3.2xlarge, r3.2xlarge, and i2.2xlarge, respectively. The instances are not served in all availability zones, and we choose 18 zones that provides the aformentioned instances types for experiments.
+
+We evaluate naive, seasonal naive, mean, seasonal ARIMA, Linear Regression, and Prophet~\cite{prophet} algorithms using packages in R 3.2.4. Among them, Linear Regression and Prophet always perform worse than Arima, and we do not show the result. Different algorithms have distinct heuristic to choose the train dataset window. Naive and seasonal naive simply reference values from the previous observations. For mean method, we use previous 1, 3, 7, 15, 30, 60, 90, and 120 days to get mean value for prediction. However, using only the most recent data (1 day) shows the best result, and we exclude other results. For seasonal Arima, we differentiate the training dataset period as 30, 60, 90, 120, and 150 days. In the prediction step, we use a model built by \textit{auto.arima} method of R. After building a model, we use the model for the next 1, 4, 8, 15, and 30 days. Overall, seasonal Arima has two configurations in the modeling data, \emph{previous days used in modeling, the number of days for a model to be used}, and we notate the value using parenthesis. For all algorithms, we predict the normalized spot instance price for the next 24 hours and calculate root-mean-squared-error to evaluate each model.   
 
 \begin{figure}
-\centering\includegraphics[width=0.7\textwidth]{figures/algorithm-compare-different-instance-type.pdf}\caption{Algorithms with different instance types\label{fig:algo-diff-inst}}
+\centering\includegraphics[width=0.7\textwidth]{figures/algorithm-compare-different-instance-type.pdf}\caption{Test error rates of different predictive algorithms. Regardless of the instance types, Arima shows the least error rate\label{fig:algo-diff-inst}}
 \end{figure}
+Figure~\ref{fig:algo-diff-inst} shows the test error of different algorithms. For seasonal Arima and mean, we select the best performing configuration values. Each algorithm is executed in all 18 availability zones, and the mean test error is presented. Regardless of instance types, Arima algorithm shows the best prediction accuracy among other methods. Previous studies concluded that using predictive analysis algorithms did not help to improve the prediction accuracy of spot instance price, and most system should rely only on the very recent price (naive method). However, with thorough experiments and train data modeling, we could uncover the effectiveness of using Arima model to predict spot instance price for the first time. In the figure, we can observe that different instance types show different test error rate, and we expect the different hardware specifications, such as equip with GPU card, can result in distinct supply and demand amounts.  
 
 \begin{figure}
-\centering\includegraphics[width=1.2\textwidth]{figures/g2-4M-L.png}\caption{ error for g2.2xlarge for ARIMA modeling\label{fig:g2-param-diverse}}
+\centering\includegraphics[width=1.2\textwidth]{figures/g2-4M-L.png}\caption{The impact of train data configurations to the overall test error rate of GPU instance.\label{fig:g2-param-diverse}}
 \end{figure}
-
-\section{Discussion and Future Work}
-With thorough analysis about spot instance price prediction algorithms, we uncover the improved prediction accuracy as well as challenges in making better prediction. Based on the observation, we are going to further improve the algorithm in the following way.  
-
-\textbf{The Good: Spot Price Change Prediction} Most of previous works that tried to predict spot instnace price concluded that the price is random, and applying predictive analysis algorithms does not really help to improve prediction quality~\cite{spot-instance-pricing-analysis,spot-price-han-arima}. In this work, we applied multiple time-series analysis algorithms by carefully designing the period of modeling data and parameters. With extensive evaluation, we could uncover that applying predictive analysis algorithms improves the price prediction accuracy over XY\% comparing to a method that uses only the most recent price~\cite{deep-spot-cloud,not-bid-cloud}.
-
-\textbf{The Challenge: No Globally Optimal Model} Despite of increasing prediction accuracy by applying various techniques, we could not find the globally optimal algorithm and training data specification for different availability zones and distinct instance types. It makes challenging to apply the algorithms for real applications that can be deployed in any environments. 
-
-\textbf{The Promising: Applying Hybrid Models} Even with the diversity of prediction accuracy for different algorithms and train data configuration, it is observed that the train error and test error show high correlation. Pearson product-moment correlation coefficient of train and test error is 0.904 - note that the coefficient has a value from -1.0 to 1.0, and the value of 1.0 means a perfect positive linear correlation, -1.0 means a negative correlation, while 0.0 means no correlation. We currently work on referencing the train error to better choose the algorithms and train data period. We are going to apply the heuristic to an application that utilizes GPU-based AWS EC2 spot instances to execute deep learning tasks in a cost efficient way~\cite{deep-spot-cloud}. 
-
-\textbf{The Benefit: Lower Cost while Using Spot Instances} With the improvement in the prediction accuracy, we expect it will result in the cost gain by cherry-picking few availability zones and instance types with lower prices. We are working on a theoritical model that specifies correlation between the prediction accuracy and the real cost gain. We are also working to utilize the predicted outcome to anticipate instances that are likely to incur unexpected service interruption that is the crucial factor of making users reluctant to use spot instances.  
+From Figure~\ref{fig:algo-diff-inst}, we observed that the Arima algorithm shows the best performance. As noted earlier, we use various combinations of modeling data period and model use days. To see the effect from the different parameters, we show the test errors of GPU instances for different train data configurations in Figure~\ref{fig:g2-param-diverse}. The left two bars show the test error value of us-west-1a and us-west-2c that show the least impact from the distinct parameters. The right two bars show the test error of ap-northeast-1a and ap-southeast-1a that show the most impact from the paramters. Other availability zones that are not shown in the chart show the pattern in-beetween. In ap-southeast-1a zone, the worst configuration shows 50\% more error rate than the best configuration. Furthermore, the worst configuration in ap-southeast-1a (150, 1) is the best configuration for ap-northeast-1a. We suspect that such diversity was not considered in the previous works that try to predict spot instance price, and they could not eventually find a model to make better prediction. 
 
 \begin{table}
   \begin{tabular}{ |C{2.5cm}||C{2cm}||C{2cm}||C{2cm}||C{2cm}|}
 \hline
 \small
-\textbf{Availability Zones} &\textbf{General}&\textbf{Compute}&\textbf{Memory}&\textbf{Storage}\\\hline 
+\textbf{Availability Zones} &\textbf{General}&\textbf{Compute}&\textbf{Memory}&\textbf{Storage}\\\hline
 ap-northeast-1a& (60,4)&(60,4)&(60,4)&(120,15)\\
 ap-northeast-1c&(60,2)&(60,2)&(120,15)&(120,15)\\
 ap-southeast-1a&(150,1)&(150,1)&(150,1)&(150,1)\\
@@ -150,9 +137,24 @@ us-west-2a&(60,2)&(150,1)&(150,1)&(150,1)\\
 us-west-2b&(60,4)&(150,1)&(30,1)&(150,1)\\
 us-west-2c&(60,2)&(60,2)&(60,2)&(150,1)\\\hline
 \end{tabular}
-\caption{Best fit ARIMA model for different availability}
-\label{table:1}
+\caption{Best Arima model configuration for different instance types in distinct availability zones}
+\label{table:best-arima-config}
 \end{table}
+
+To check if there is optimal Arima train data configuration, we list the best performing train data parameters in Table~\ref{table:best-arima-config}. From the table, we can see that there is no globally optimal configurations. Contrary to general belief, building a model with train dataset with shorter time window sometimes performs better than longer train dataset. Furthermore, using a model longer period of time ocassionally perform better. From the table, we conclude that predicting spot instace price needs careful consideration in building train dataset, and the configuration needs to be dynamically updated. 
+
+
+\section{Discussion and Future Work}
+With thorough analysis about spot instance price prediction algorithms, we uncover the improved prediction accuracy as well as challenges in making better prediction. Based on the observation, we are going to further improve the algorithm in the following way.  
+
+\textbf{The Good: Spot Price Change Prediction} Most of previous works that tried to predict spot instnace price concluded that the price is random, and applying predictive analysis algorithms does not really help to improve prediction quality~\cite{spot-instance-pricing-analysis,spot-price-han-arima}. In this work, we applied multiple time-series analysis algorithms by carefully designing the period of modeling data and parameters. With extensive evaluation, we could uncover that applying predictive analysis algorithms improves the price prediction accuracy over XY\% comparing to a method that uses only the most recent price~\cite{deep-spot-cloud,not-bid-cloud}.
+
+\textbf{The Challenge: No Globally Optimal Model} Despite of increasing prediction accuracy by applying various techniques, we could not find the globally optimal algorithm and training data specification for different availability zones and distinct instance types. It makes challenging to apply the algorithms for real applications that can be deployed in any environments. 
+
+\textbf{The Promising: Applying Hybrid Models} Even with the diversity of prediction accuracy for different algorithms and train data configuration, it is observed that the train error and test error show high correlation. Pearson product-moment correlation coefficient of train and test error is 0.904 - note that the coefficient has a value from -1.0 to 1.0, and the value of 1.0 means a perfect positive linear correlation, -1.0 means a negative correlation, while 0.0 means no correlation. We currently work on referencing the train error to better choose the algorithms and train data period. We are going to apply the heuristic to an application that utilizes GPU-based AWS EC2 spot instances to execute deep learning tasks in a cost efficient way~\cite{deep-spot-cloud}. 
+
+\textbf{The Benefit: Lower Cost while Using Spot Instances} With the improvement in the prediction accuracy, we expect it will result in the cost gain by cherry-picking few availability zones and instance types with lower prices. We are working on a theoritical model that specifies correlation between the prediction accuracy and the real cost gain. We are also working to utilize the predicted outcome to anticipate instances that are likely to incur unexpected service interruption that is the crucial factor of making users reluctant to use spot instances.  
+
 \section{Conclusion}
 Summarize
 %\begin{acknowledgement}
