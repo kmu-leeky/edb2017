@@ -66,13 +66,13 @@ our work covered  7 regions of spot instances datasets, ap-northeast-1, ap-south
 
 In our work, we use many forecasting time series models and parameters to get best fit to data, from sample models as mean method which use mean of history as predation, assume that our historical data sets be \(x\)
 \begin{equation}
- \frac{y_t = x_-1 +x_-2+ x_-3+.....+x_-n+}{X}
+ \frac{y_t = x_{t-1} +x_{t-2}+ x_{t-3}+.....+x_{t-n}}{X}
 \label{mean}
 \end{equation} 
 
 Naïve method another simple model to forecasting but anested to use mean historical data the model just simple set last value to be as predation result 
 \begin{equation}
- y_t = x_-1 
+ y_t = x_{t-1} 
 \label{naive}
 \end{equation}
 seasonal mean method to forecast time series the model use historical data to find the same \(S\) previous observed for predation at time T 
@@ -84,7 +84,7 @@ seasonal mean method to forecast time series the model use historical data to fi
 Where \(x\) previous observed from historical data at time \(s\) where \(s\) equal to \(t\)
 
 ARIMA with different parameters 
-stander for Autoregressive Integrated Moving Average, which is the most popular statistical model and widely used to forecasting a time series, the model is a combination of  autoregressive Eq.~\ref{Eq-AR} and moving-average model Eq.~\ref{Eq-MA}, with three parameters  (p,d,q) where p is the number of autoregressive terms, which is depends on past values, d is the degree of differencing and q is the number of lagged forecast errors in the prediction equation, depends only on the random error terms 
+stander for Autoregressive Integrated Moving Average, which is the most popular statistical model and widely used to forecasting a time series, the model is a combination of  autoregressive Eq.~\ref{Eq-AR} and moving-average model Eq.~\ref{Eq-MA}, with three parameters  \((p,d,q)\) where p is the number of autoregressive terms, which is depends on past values, d is the degree of differencing and  \(q\) is the number of lagged forecast errors in the prediction equation, depends only on the random error terms 
 \begin{equation}
  y_t = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
 \label{Eq-AR}
@@ -93,7 +93,7 @@ stander for Autoregressive Integrated Moving Average, which is the most popular 
  y_t = w_0 +\epsilon_t + \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}
 \label{Eq-MA}
 \end{equation}
-Thus, ARIMA if d=n will be 
+Thus, ARIMA if \(d = n\) will be 
 \begin{equation}
  y_t = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n} +  \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}+
 \label{Eq-ARIMA}
@@ -103,18 +103,12 @@ Where the term \(\beta_i \) is, weight applied to prior values in the time serie
 Compare all the methods of different types of algorithms to different instance types
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{figures/algorithm-compare-different-instance-type.pdf}\caption{Algorithms with different instance types\label{fig:algo-diff-inst}}
-\hfill
 \centering\includegraphics[width=1.2\textwidth]{figures/g2-4M-L.png}\caption{ error for g2.2xlarge for ARIMA modeling\label{fig:algo-diff-inst}}
-
-
 \end{figure}
-
-\begin{tabular}{lllll}
+\begin{table}
+\begin{tabular}{ |p{2.5cm}||p{2cm}||p{2cm}| |p{2cm}||p{2cm}|}
 \small
-\begin{tabular}{ |p{2cm}||p{2cm}||p{2cm}| |p{2cm}||p{2cm}|}
-{g2 } \\
-\hline 
-m4 instances&c3 instances&r3 instances& i2 instances\\
+Availability Zones &m4 instances&c3 instances&r3 instances& i2 instances\\\hline 
 ap-northeast-1a& (60,4)&(60,4)&(60,4)&(120,15)\\
 ap-northeast-1c&(60,2)&(60,2)&(120,15)&(120,15)\\
 ap-southeast-1a&(150,1)&(150,1)&(150,1)&(150,1)\\
@@ -134,8 +128,9 @@ us-west-2a&(60,2)&(150,1)&(150,1)&(150,1)\\
 us-west-2b&(60,4)&(150,1)&(30,1)&(150,1)\\
 us-west-2c&(60,2)&(60,2)&(60,2)&(150,1)\\
 \end{tabular}
-\end{tabular}
-
+\caption{Best fit ARIMA model for different availability}
+\label{table:1}
+\end{table}
 \section{Conclusion}
 Summarize
 %\begin{acknowledgement}
