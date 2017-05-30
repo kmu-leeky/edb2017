@@ -56,7 +56,7 @@ Though users can utilize the opportunistic resources at a cheaper price, sudden 
 In this paper, we apply few time-series analysis algorithms to predict future price change pattern of AWS EC2 spot instances. By carefully desiging the period of train datasets, we could uncover that applying seasonal-arima (s-arima) can improve the accuracy of price change prediction error by XY\% comparing to the naive method that references most recent price to predict future price~\cite{deep-spot-cloud}. In addition to the contribution of improved price prediction accuracy, we could also discover that the configuration values to get the best prediction accuracy differs significantly across different availability zones (AZs) and instance types. Based on the extensive experiments and promising results, we bring up an opportunity of improving spot instance prediction accuracy that can result in significant cost gain for cloud computing users with increased system stability.
 
 
-\section{Time-Series Analysis for GPU Spot Instances}
+\section{Time-Series Analysis for AWS EC2 Spot Instance Price}
 List basic methods that are widely used in other wors
 focus to analyze the predication of spot instances price for 7 regions by use different time series models such as ARIMA, SARIMA VAR, DLM, prophet, average and naïve model
 our work covered  7 regions of spot instances datasets, ap-northeast-1, ap-southeast-1, ap-regions, and 5 types and different period of datasets G2(03-02 to 2016-10-31),I2(2016-05-03 to 2017-02-04),M4,c3,R3(2016-03-02 to 2017-02-04)
@@ -88,12 +88,19 @@ Thus, ARIMA if d=n will be
 \end{equation}
 Where the term \(\beta_i \) is, weight applied to prior values in the time series \(\delta_i \) is autocorrelation coefficients at lags and \(\epsilon_i \) is residual error term 
 
-\section{Evaluation}
 Compare all the methods of different types of algorithms to different instance types
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{figures/algorithm-compare-different-instance-type.pdf}\caption{Algorithms with different instance types\label{fig:algo-diff-inst}}
 \end{figure}
 
+\section{Discussion and Future Work}
+\textbf{The Good: Spot Price Change Prediction}: Most of previous works that tried to predict spot instnace price concluded that the price is random, and applying predictive analysis algorithms does not really help to improve prediction quality~\cite{spot-instance-pricing-analysis,spot-price-han-arima}. In this work, we applied multiple time-series analysis algorithms by carefully designing the period of modeling data and parameters. With extensive evaluation, we could uncover that applying predictive analysis algorithms improves the price prediction accuracy over XY\% comparing to a method that uses only the most recent price~\cite{deep-spot-cloud,not-bid-cloud}.
+
+\textbf{The Challenge: No Globally Optimal Model}: Despite of increasing prediction accuracy by applying various techniques, we could not find the globally optimal algorithm and training data specification. It makes challenging to apply the algorithms for real applications that can get cost benefit by using spot instances. 
+
+\textbf{The Promising: Applying Hybrid Models}: Even with the diversity of prediction accuracy for different algorithms and train data configuration, it is observed that the train error and test error show high correlation. Pearson product-moment correlation coefficient of train and test error is 0.904 - note that the coefficient has a value from -1.0 to 1.0, and the value of 1.0 means a perfect positive linear correlation, -1.0 means a negative correlation, while 0.0 means no correlation. We currently work on referencing the train error to better choose the algorithms and train data period. We are going to apply the heuristic to an application that utilizes GPU-based AWS EC2 spot instances to execute deep learning tasks in a cost efficient way~\cite{deep-spot-cloud}. 
+
+\textbf{The Benefit: Lower Cost while Using Spot Instances}
 \section{Conclusion}
 Summarize
 
