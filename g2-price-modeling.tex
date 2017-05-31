@@ -96,23 +96,21 @@ If we set \(d = n\), the equation will be
 \label{Eq-ARIMA}
 \end{equation}
 
-The term \(\beta_i \) is the weight that is applied to prior values in the time series, \(\delta_i \) is auto-correlation coefficients at lags, and \(\epsilon_i \) is the residual error term.\\
+The term \(\beta_i \) is the weight that is applied to prior values in the time series, \(\delta_i \) is auto-correlation coefficients at lags, and \(\epsilon_i \) is the residual error term.
 
-SARIMA stands for Seasonal ARIMA. In time series the seasonality pattern changes over time, and periods of time repeats can also vary, such as yearly, monthly, or dialy. In SARIMA model, the AR (Eq.~\ref{Eq-AR}) and MA (Eq.~\ref{Eq-MA}) parts predict \(y_i\) at the same seasonality period, form historical data sets \(X\) and with seasonal \(S = 4\)  might predict this time series in April, then AR would be use \(\beta_{t-4}\) and MA  \(\delta_{t-4}\), second model MA would be  \(\beta_{t-4}\)  and \(\beta_{t-8}\) and AR \(\delta_{t-4}\) and \(\delta_{t-8}\).\\
+\begin{figure}
+\centering\includegraphics[width=0.7\textwidth]{figures/sarima.png}\caption{SARIMA example}\label{fig:sarima}
+\end{figure}
+
+SARIMA stands for Seasonal ARIMA that takes into account seasonal characteristics of input dataset, such as daily, monthly, or yearly. Figure~\ref{fig:sarima} shows an example dataset that is observed for one year and we will predict \(y_s\)  with seasonal  \(s= 4\) ,then the model will split length  of time series  to 4 quarterly seasonal periods for one year will be 3 months every period and then looking at same seasonal for all periods based on number of AR Eq.~\ref{Eq-AR} and MA Eq.~\ref{Eq-MA} then AR would be use \(\beta_{t-4}\) and MA  \(\delta_{t-4}\), second model MA would be  \(\beta_{t-4}\)  and \(\beta_{t-8}\) and AR \(\delta_{t-4}\) and \(\delta_{t-8}\).\\
+
 Prophet model released by Facebook`s Core Data Science team ~\cite{prophet}, prophet model forecasting time series based on an additive model, non-linear model fit with seasonality and holidays like christmas ,it is required for historical datasets at least one year.
 The prophet predect \(y_t\) by compute growth, seasonality and holidays:
 \begin{equation}
 \hat{y_t} = \beta_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
 \label{Eq-prophet}
 \end{equation}
-Where the term \(g_t\) is growth function to compute how the series has grown and the expected values for continue growing, and \(s_t\) seasonality change based on series behaviors ,\(h_t\) the effects of holidays ,\(\epsilon_t\) the error term.\\
-Linear Regression static ,model each historical data as depending where the model try to find relationship between observed and the prediction.
-\begin{equation}
-\hat{y_t} = \alpha_0 + \alpha_t y_t +\epsilon_t
-\label{Eq-LR}
-\end{equation}
-where the intercept repesent as \(\alpha_0\) and \(\alpha_1 \) is the slope.\\
-in next section we will discuss how we apply the algorithms to our data sets
+Where the term \(g_t\) is growth function to compute how the series has grown and the expected values for continue growing, and \(s_t\) seasonality change based on series behaviors ,\(h_t\) the effects of holidays ,\(\epsilon_t\) the error term.
 
 \section{Evaluation}
 To evalate the effectiveness of applying various algorithms to predict spot instance price, we fetch 11 months (March. 2016 ~ Feb. 2017) of spot price log files from the AWS public API service. From the log files, we extracted the timestamp, spot price, availability zone, and instance type. As the on-demand instance price is different for different instance types in different regions, we normalize the spot instance price to that of on-demand instance. The normailized value indicates the cost gain that one can expect while using spot instances.
@@ -127,7 +125,7 @@ We evaluate naive, seasonal naive, mean, seasonal ARIMA, Linear Regression Eq.~\
 
 Figure~\ref{fig:algo-diff-inst} shows the test error of different algorithms. For seasonal Arima and mean, we select the best performing configuration values. Each algorithm is executed in all 18 availability zones, and the mean test error is presented. Regardless of instance types, Arima algorithm shows the best prediction accuracy among other methods. Previous studies concluded that using predictive analysis algorithms did not help to improve the prediction accuracy of spot instance price, and most system should rely only on the very recent price (naive method). However, with thorough experiments and train data modeling, we could uncover the effectiveness of using Arima model to predict spot instance price for the first time. In the figure, we can observe that different instance types show different test error rate, and we expect the different hardware specifications, such as equip with GPU card, can result in distinct supply and demand amounts.  
 \begin{figure}
-\centering\includegraphics[width=1.2\textwidth]{figures/g2-4m-l.pdf}\caption{The impact of train data configurations to the overall test error rate of GPU instance.\label{fig:g2-param-diverse}}
+\centering\includegraphics[width=1.2\textwidth]{figures/g2-4m-l.png}\caption{The impact of train data configurations to the overall test error rate of GPU instance.\label{fig:g2-param-diverse}}
 \end{figure}
 From Figure~\ref{fig:algo-diff-inst}, we observed that the Arima algorithm shows the best performance. As noted earlier, we use various combinations of modeling data period and model use days. To see the effect from the different parameters, we show the test errors of GPU instances for different train data configurations in Figure~\ref{fig:g2-param-diverse}. The left two bars show the test error value of us-west-1a and us-west-2c that show the least impact from the distinct parameters. The right two bars show the test error of ap-northeast-1a and ap-southeast-1a that show the most impact from the paramters. Other availability zones that are not shown in the chart show the pattern in-beetween. In ap-southeast-1a zone, the worst configuration shows 50\% more error rate than the best configuration. Furthermore, the worst configuration in ap-southeast-1a (150, 1) is the best configuration for ap-northeast-1a. We suspect that such diversity was not considered in the previous works that try to predict spot instance price, and they could not eventually find a model to make better prediction. 
 \begin{table}
