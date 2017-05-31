@@ -39,8 +39,8 @@
 \begin{document}
 
 \title*{Predication Instances spot price in EC2}
-\author{Sara Abdulaziz, Kyungyong Lee, and Hyeokman Kim}
-\institute{Sara Abdulaziz \at Kookmin University, Seoul. South Korea, \email{name@email.address}
+\author{Sarah Alkharif , Kyungyong Lee, and Hyeokman Kim}
+\institute{Sarah Alkharif \at Kookmin University, Seoul. South Korea, \email{saraalkharif@kookmin.ac.kr}
 \and Kyungyong Lee \at Kookmin University, Seoul. South Korea, \email{leeky@kookmin.ac.kr}
 \and Hyeokman Kim  \at Kookmin University, Seoul. South Korea, \email{hmkim@kookmin.ac.kr}
 }
@@ -61,60 +61,69 @@ Though users can utilize the opportunistic resources at a cheaper price, sudden 
 In this paper, we apply few time-series analysis algorithms to predict future price change pattern of AWS EC2 spot instances. By carefully desiging the period of train datasets, we could uncover that applying seasonal-arima (s-arima) can improve the accuracy of price change prediction error by 17\% on average comparing to the naive method that references most recent price to predict future price~\cite{deep-spot-cloud}. In addition to the contribution of improved price prediction accuracy, we could also discover that the configuration values to get the best prediction accuracy differs significantly across different availability zones (AZs) and instance types. Based on the extensive experiments and promising results, we bring up an opportunity of improving spot instance prediction accuracy that can result in significant cost gain for cloud computing users with increased system stability.
 
 
+
 \section{Time-Series Analysis for AWS EC2 Spot Instance Price}
-In our work, we use many forecasting time series models and parameters to get best fit to data, from sample models as mean method which use mean of history as predation, assume that our historical data sets be \(x\)
+In our work, we used many Time-Series Analysis models to predict spot instinces future price and get best fit to our data, starting from sample method models as mean method which useing the mean of history as predation, assumeing that our historical data sets be \(x\) the will compute the mean based on number of lag.
 \begin{equation}
- \frac{y_t = x_{t-1} +x_{t-2}+ x_{t-3}+.....+x_{t-n}}{X}
+\hat{y_t} = \frac{x_{t-1} +x_{t-2}+ x_{t-3}+.....+x_{t-n}}{X}
 \label{mean}
 \end{equation} 
-
-Naïve method another simple model to forecasting but anested to use mean historical data the model just simple set last value to be as predation result 
+Naïve method another simple model to forecasting time-Series anested to use mean historical data Naïve model just simple set last value to be as predation result. 
 \begin{equation}
- y_t = x_{t-1} 
+\hat{y_t} = x_{t-1} 
 \label{naive}
 \end{equation}
-seasonal mean method to forecast time series the model use historical data to find the same \(S\) previous observed for predation at time T 
+seasonal Naïve method algorithms use historical data to find the same seasonal \(S\) from previous observed to predict at seasonal \(y_t\). 
 \begin{equation}
- y_t = x_s 
+\hat{y_t} = x_s 
 \label{smean}
 \end{equation}
-
-Where \(x\) previous observed from historical data at time \(s\) where \(s\) equal to \(t\)
-
-ARIMA with different parameters 
-stander for Autoregressive Integrated Moving Average, which is the most popular statistical model and widely used to forecasting a time series, the model is a combination of  autoregressive Eq.~\ref{Eq-AR} and moving-average model Eq.~\ref{Eq-MA}, with three parameters  \((p,d,q)\) where p is the number of autoregressive terms, which is depends on past values, d is the degree of differencing and  \(q\) is the number of lagged forecast errors in the prediction equation, depends only on the random error terms 
+Where \(x\) previous observed from historical data at time \(s\) where \(s\) equal to \(t\).\\
+ARIMA, is the most popular statistical model and widely used to forecasting a time series,stander for Autoregressive Integrated Moving Average, the model is a combination of  autoregressive Eq.~\ref{Eq-AR} and moving-average model Eq.~\ref{Eq-MA}, with three parameters  \((p,d,q)\) where \(p\) is the number of autoregressive terms, which is depends on past values, \(d\) is the degree of differencing and  \(q\) is the number of lagged forecast errors in the prediction equation ,depends only on the random error terms.
 \begin{equation}
- y_t = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
+\hat{y_t} = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
 \label{Eq-AR}
 \end{equation}
 \begin{equation}
- y_t = w_0 +\epsilon_t + \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}
+\hat{y_t} = w_0 +\epsilon_t + \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}
 \label{Eq-MA}
 \end{equation}
-Thus, ARIMA if \(d = n\) will be 
+Thus, ARIMA if we set \(d = n\) then will be 
 \begin{equation}
- y_t = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n} +  \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}+
+\hat{y_t} = w_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n} +  \delta_1 \epsilon_{t-1}+  \delta_2 \epsilon_{t-2}+...+ \delta_n \epsilon_{t-n}+
 \label{Eq-ARIMA}
 \end{equation}
-Where the term \(\beta_i \) is, weight applied to prior values in the time series \(\delta_i \) is autocorrelation coefficients at lags and \(\epsilon_i \) is residual error term 
+Where the term \(\beta_i \) is, weight applied to prior values in the time series \(\delta_i \) is autocorrelation coefficients at lags and \(\epsilon_i \) is residual error term\\
 
+SARIMA stander for Seasonal Autoregressive Integrated Moving Average, In time series the seasonality pattern it change over time, where this periods of time repeats many time in data sets for example yearly, monthly, or dialy,SARIMA model in first model AR Eq.~\ref{Eq-AR} and MA Eq.~\ref{Eq-MA}  predict \(y_i\) at same seasonality periods,form historical data sets \(X\) and with seasonal \(S = 4\)  might predict this time series in April, then AR would be use \(\beta_{t-4}\) and MA  \(\delta_{t-4}\), second model MA would be  \(\beta_{t-4}\)  and \(\beta_{t-8}\) and AR \(\delta_{t-4}\) and \(\delta_{t-8}\).\\
+Prophet model released by Facebook`s Core Data Science team \emph{prothet}, prophet model forecasting time series based on an additive model, non-linear model fit with seasonality and holidays like christmas ,it is required for historical datasets at least one year.
+The prophet predect \(y_t\) by compute growth, seasonality and holidays:
+\begin{equation}
+\hat{y_t} = \beta_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
+\label{Eq-prophet}
+\end{equation}
+Where the term \(g_t\) is growth function to compute how the series has grown and the expected values for continue growing, and \(s_t\) seasonality change based on series behaviors ,\(h_t\) the effects of holidays ,\(\epsilon_t\) the error term.\\
+Linear Regression static ,model each historical data as depending where the model try to find relationship between observed and the prediction.
+\begin{equation}
+\hat{y_t} = \alpha_0 + \alpha_t y_t +\epsilon_t
+\label{Eq-LR}
+\end{equation}
+where the intercept repesent as \(\alpha_0\) and \(\alpha_1 \) is the slope.\\
+in next section we will discuss how we apply the algorithms to our data sets
 \section{Evaluation}
 To evalate the effectiveness of applying various algorithms to predict spot instance price, we fetch 11 months (March. 2016 ~ Feb. 2017) of spot price log files from the AWS public API service. From the log file, we extracted the timestamp, spot price, availability zone, and instance type. As the on-demand instance price is different for different instance types in different regions, we normalize the spot instance price to that of on-demand instance. The normailized value indicates the cost gain that one can expect while using spot instances.
 
-At the time of writing, there are over 60s of AWS EC2 instance types that are served in over 30 availability zones. It becomes prohibitive to present the experiment results from all the instance types, and we select representative instances in General, GPU, Compute-, Memory-, and Storage-optimized types that are m4.2xlarge, g2.2xlarge, c3.2xlarge, r3.2xlarge, and i2.2xlarge, respectively. The instances are not served in all availability zones, and we choose 18 zones that provides the aformentioned instances types for experiments.
+At the time of writing, there are over 60s of AWS EC2 instance types that are served in over 30 availability zones. It becomes prohibitive to present the experiment results from all the instance types, and we select representative instances in General, GPU, Compute, Memory, and Storage-optimized types that are m4.2xlarge, g2.2xlarge, c3.2xlarge, r3.2xlarge, and i2.2xlarge, respectively. The instances are not served in all availability zones, and we choose 18 zones that provides the aformentioned instances types for experiments.
 
-We evaluate naive, seasonal naive, mean, seasonal ARIMA, Linear Regression, and Prophet~\cite{prophet} algorithms using packages in R 3.2.4. Among them, Linear Regression and Prophet always perform worse than Arima, and we do not show the result. Different algorithms have distinct heuristic to choose the train dataset window. Naive and seasonal naive simply reference values from the previous observations. For mean method, we use previous 1, 3, 7, 15, 30, 60, 90, and 120 days to get mean value for prediction. However, using only the most recent data (1 day) shows the best result, and we exclude other results. For seasonal Arima, we differentiate the training dataset period as 30, 60, 90, 120, and 150 days. In the prediction step, we use a model built by \textit{auto.arima} method of R. After building a model, we use the model for the next 1, 4, 8, 15, and 30 days. Overall, seasonal Arima has two configurations in the modeling data, \emph{previous days used in modeling, the number of days for a model to be used}, and we notate the value using parenthesis. For all algorithms, we predict the normalized spot instance price for the next 24 hours and calculate root-mean-squared-error to evaluate each model.   
-
+We evaluate naive, seasonal naive, mean, seasonal ARIMA, Linear Regression Eq.~\ref {Eq-LR}, and Prophet Eq.~\ref {Eq-prophet} algorithms using packages in R 3.2.4. Among them, Linear Regression and Prophet always perform worse than Arima, and we do not show the result. Different algorithms have distinct heuristic to choose the train dataset window. Naive and seasonal naive simply reference values from the previous observations. For mean method, we use previous 1, 3, 7, 15, 30, 60, 90, and 120 days to get mean value for prediction. However, using only the most recent data (1 day) shows the best result, and we exclude other results. For seasonal Arima, we differentiate the training dataset period as 30, 60, 90, 120, and 150 days. In the prediction step, we use a model built by \textit{auto.arima} method of R. After building a model, we use the model for the next 1, 4, 8, 15, and 30 days. Overall, seasonal Arima has two configurations in the modeling data, \emph{previous days used in modeling, the number of days for a model to be used}, and we notate the value using parenthesis. For all algorithms, we predict the normalized spot instance price for the next 24 hours and calculate root-mean-squared-error to evaluate each model.   
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{figures/algorithm-compare-different-instance-type.pdf}\caption{Test error rates of different predictive algorithms. Regardless of the instance types, Arima shows the least error rate\label{fig:algo-diff-inst}}
 \end{figure}
 Figure~\ref{fig:algo-diff-inst} shows the test error of different algorithms. For seasonal Arima and mean, we select the best performing configuration values. Each algorithm is executed in all 18 availability zones, and the mean test error is presented. Regardless of instance types, Arima algorithm shows the best prediction accuracy among other methods. Previous studies concluded that using predictive analysis algorithms did not help to improve the prediction accuracy of spot instance price, and most system should rely only on the very recent price (naive method). However, with thorough experiments and train data modeling, we could uncover the effectiveness of using Arima model to predict spot instance price for the first time. In the figure, we can observe that different instance types show different test error rate, and we expect the different hardware specifications, such as equip with GPU card, can result in distinct supply and demand amounts.  
-
 \begin{figure}
-\centering\includegraphics[width=1.2\textwidth]{figures/g2-4M-L.png}\caption{The impact of train data configurations to the overall test error rate of GPU instance.\label{fig:g2-param-diverse}}
+\centering\includegraphics[width=1.2\textwidth]{figures/g2-4m-l.pdf}\caption{The impact of train data configurations to the overall test error rate of GPU instance.\label{fig:g2-param-diverse}}
 \end{figure}
 From Figure~\ref{fig:algo-diff-inst}, we observed that the Arima algorithm shows the best performance. As noted earlier, we use various combinations of modeling data period and model use days. To see the effect from the different parameters, we show the test errors of GPU instances for different train data configurations in Figure~\ref{fig:g2-param-diverse}. The left two bars show the test error value of us-west-1a and us-west-2c that show the least impact from the distinct parameters. The right two bars show the test error of ap-northeast-1a and ap-southeast-1a that show the most impact from the paramters. Other availability zones that are not shown in the chart show the pattern in-beetween. In ap-southeast-1a zone, the worst configuration shows 50\% more error rate than the best configuration. Furthermore, the worst configuration in ap-southeast-1a (150, 1) is the best configuration for ap-northeast-1a. We suspect that such diversity was not considered in the previous works that try to predict spot instance price, and they could not eventually find a model to make better prediction. 
-
 \begin{table}
   \begin{tabular}{ |C{2.5cm}||C{2cm}||C{2cm}||C{2cm}||C{2cm}|}
 \hline
@@ -158,7 +167,7 @@ With thorough analysis about spot instance price prediction algorithms, we uncov
 \textbf{The Benefit: Lower Cost while Using Spot Instances} With the improvement in the prediction accuracy, we expect it will result in the cost gain by cherry-picking few availability zones and instance types with lower prices. We are working on a theoritical model that specifies correlation between the prediction accuracy and the real cost gain. We are also working to utilize the predicted outcome to anticipate instances that are likely to incur unexpected service interruption that is the crucial factor of making users reluctant to use spot instances.  
 
 \section{Conclusion}
-Summarize
+In this work ,we try to predict future price for AWS EC2 for Computer, GPU, Storage-optimized, and General Memory instances types with 18 Availability Zones using Time-series algorithm to get the best prediction accuracy as Prophet, Naïve, seasonal Naïve ,mean ,SARIMA ,Linear Regression algorithms ,and we find that ARIMA model shows best preforming than other algorithms ,and build model with short window for train datasets some time gives better performance ,and we found that there is possibility to improve prediction quality with predictive analysis algorithms to predict future price .
 %\begin{acknowledgement}
 %Thanks to ...
 %\end{acknowledgement}
