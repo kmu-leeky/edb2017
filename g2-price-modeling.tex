@@ -102,15 +102,16 @@ The term \(\beta_i \) is the weight that is applied to prior values in the time 
 \centering\includegraphics[width=0.7\textwidth]{figures/sarima.png}\caption{SARIMA example}\label{fig:sarima}
 \end{figure}
 
-SARIMA stander for Seasonal Autoregressive Integrated Moving Average\((P,D,Q)_s\) allow to convert ARIMA model to seasonal by account the seasonal observation ,where some seasonal \(S\) is repeats many periods in data sets for an example take historical time series data\(X\) for one year and we will predict \(y_s\) with seasonal \(s= 4\) ,then the model will split the length of time series by number of seasonal ,so we will get 4 periods each content 3 months Figure~\ref{fig:sarima} from (1 to 3) as 4th lag ,(4 to 6) 3rd lag ,(7 to 9) 2nd lag and (10 to 12) as first lag ,then the looking at same seasonal time \( (x_{0}, x_{{s-1}}, x{{s-2}}, x_{{s-3}} )\) the number of periods will chosen based on number of lag given by AR Eq.~\ref{Eq-AR} and MA Eq.~\ref{Eq-MA} if we set AR and MR coefficient as 2 then the AR would be\(\beta_{s}\) and \(\beta_{s}\) and the MA \(\delta_{s}\) and \(\delta_{s-1}\).\\
+SARIMA stands for Seasonal ARIMA that allows to convert ARIMA model to take into account seasonal characteristics that some seasonal \(S\) pattern is repeats along many periods in data sets. For example, in Figure~\ref{fig:sarima}, taking historical time series data\(X\) for one year and we will predict \(y_s\) with a seasonal period \(s= 4\), then the model will split the length of time series by the number of seasonal period. We will get 4 periods in each period that contains 3 months. In the figure, assuming (1 to 3) as 4th lag, (4 to 6) 3rd lag, (7 to 9) 2nd lag, and (10 to 12) as the first lag. the seasonal time \( (x_{0}, x_{{s-1}}, x{{s-2}}, x_{{s-3}} )\) and the number of periods will be chosen based on number of lag given by AR Equation~\ref{Eq-AR} and MA Equation~\ref{Eq-MA}. If we set AR and MR coefficient as 2 then the AR would be\(\beta_{s}\) and \(\beta_{s-1}\) and the MA \(\delta_{s}\) and \(\delta_{s-1}\).
 
-Prophet model released by Facebook`s Core Data Science team ~\cite{prophet}, prophet model forecasting time series based on an additive model, non-linear model fit with seasonality and holidays like christmas ,it is required for historical datasets at least one year.
-The prophet predect \(y_t\) by compute growth, seasonality and holidays:
+Prophet model is released by Facebook`s Core Data Science team~\cite{prophet}. Prophet model forecasts time series dataset based on an additive and non-linear model fit with seasonality and holidays. The prophet algorithm predicts \(y_t\) by computing growth, seasonality and holidays:
+
 \begin{equation}
 \hat{y_t} = \beta_0 +\beta_1 y_{t-1}+ \beta_2 y_{t-2}+.....\beta_n y_{t-n}+\epsilon_t
 \label{Eq-prophet}
 \end{equation}
-Where the term \(g_t\) is growth function to compute how the series has grown and the expected values for continue growing, and \(s_t\) seasonality change based on series behaviors ,\(h_t\) the effects of holidays ,\(\epsilon_t\) the error term.
+
+The term \(g_t\) is the growth function to compute how the series has grown and the expected values for continuing growth, and \(s_t\) seasonality change based on series behaviors, \(h_t\) the effects of holidays, \(\epsilon_t\) the error term.
 
 \section{Evaluation}
 To evalate the effectiveness of applying various algorithms to predict spot instance price, we fetch 11 months (from March. 2016 to Feb. 2017) of spot price log files from the AWS public API service. From the log files, we extracted the timestamp, spot price, availability zone, and instance type. As the on-demand instance price is different for different instance types in different regions, we normalize the spot instance price to that of on-demand instance. The normailized value indicates the cost gain that one can expect while using spot instances; smaller value indicates more gain.
